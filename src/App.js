@@ -1,28 +1,36 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { createStore, applyMiddleware } from 'redux'
+import reducer from './reducers'
+import thunkMiddleware from 'redux-thunk'
+import { Provider } from 'react-redux'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import HomeScreen from './containers/HomeScreen'
+import NotFoundScreen from './containers/NotFoundScreen'
+import ComicsScreen from './containers/ComicsScreen'
+import CharactersScreen from './containers/CharactersScreen'
+import CharacterScreen from './containers/CharacterScreen'
+import ComicScreen from './containers/ComicScreen'
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+const App = () => {
+  const store = createStore(reducer, applyMiddleware(
+    thunkMiddleware
+  ))
+  
+  store.subscribe(() => console.log(store.getState()))
+  return (
+    <Provider store={store}>
+      <Router>
+        <Switch>
+          <Route path='/' exact component={HomeScreen} />
+          <Route path='/characters' exact component={CharactersScreen} />
+          <Route path='/characters/:id' exact component={CharacterScreen} />
+          <Route path='/comics/:id' exact component={ComicScreen} />
+          <Route path='/comics' exact component={ComicsScreen} />
+          <Route component={NotFoundScreen} />
+        </Switch>
+      </Router>
+    </Provider>
+  )
 }
 
-export default App;
+export default App
