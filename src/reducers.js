@@ -2,7 +2,9 @@ import { combineReducers } from 'redux'
 import {
   REQUEST_ENTITY,
   RECEIVE_ENTITY_RESOURCE,
-  RECEIVE_ENTITY_RESOURCES
+  RECEIVE_ENTITY_RESOURCES,
+  RECEIVE_ENTITY_SEARCH,
+  REQUEST_ENTITY_SEARCH
 } from './constants'
 /**
  * 
@@ -20,6 +22,7 @@ const entities = (state = {}, action) => {
         }
       }
     case RECEIVE_ENTITY_RESOURCES:
+    case RECEIVE_ENTITY_SEARCH:
       const reduceResources = (resources, resource) => ({
         ...resources,
         [resource.id]: resource
@@ -44,6 +47,14 @@ const resourceShape = {
     offset: 0,
     limit: 20,
   },
+  searches: {
+    isSearching: false,
+    items: [],
+    pagination: {
+      offset: 0,
+      limit: 20,
+    },
+  }
 }
 /**
  * 
@@ -56,6 +67,15 @@ const resource = (state = resourceShape, action) => {
       return {
         ...state,
         isFetching: true
+      }
+    case REQUEST_ENTITY_SEARCH:
+      return {
+        ...state,
+        isFetching: action.isValidSearch,
+        searches: {
+          ...resourceShape.searches,
+          isSearching: action.isValidSearch
+        }
       }
     case RECEIVE_ENTITY_RESOURCE:
       return {
@@ -76,6 +96,18 @@ const resource = (state = resourceShape, action) => {
         ],
         pagination: action.pagination
       }
+    case RECEIVE_ENTITY_SEARCH:
+      return {
+        ...state,
+        isFetching: false,
+        attributionText: action.attributionText,
+        searches: {
+          ...state.searches,
+          isSearching: true,
+          items: action.resources.map(item => item.id),
+          pagination: action.pagination
+        }
+      }
     default:
       return state
   }
@@ -88,8 +120,10 @@ const resource = (state = resourceShape, action) => {
 const resourcesByEntity = (state = {}, action) => {
   switch (action.type) {
     case REQUEST_ENTITY:
+    case REQUEST_ENTITY_SEARCH:
     case RECEIVE_ENTITY_RESOURCE:
     case RECEIVE_ENTITY_RESOURCES:
+    case RECEIVE_ENTITY_SEARCH:
       return {
         ...state,
         [action.entity]: resource(state[action.entity], action)
