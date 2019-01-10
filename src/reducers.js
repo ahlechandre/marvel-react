@@ -4,7 +4,8 @@ import {
   RECEIVE_ENTITY_RESOURCE,
   RECEIVE_ENTITY_RESOURCES,
   RECEIVE_ENTITY_SEARCH,
-  REQUEST_ENTITY_SEARCH
+  REQUEST_ENTITY_SEARCH,
+  END_ENTITY_SEARCH
 } from './constants'
 /**
  * 
@@ -42,13 +43,15 @@ const entities = (state = {}, action) => {
 }
 const resourceShape = {
   isFetching: false,
+  isSearching: false,
+  attributionText: null,
   items: [],
   pagination: {
     offset: 0,
     limit: 20,
   },
-  searches: {
-    isSearching: false,
+  search: {
+    term: null,
     items: [],
     pagination: {
       offset: 0,
@@ -61,7 +64,7 @@ const resourceShape = {
  * @param {Object} state 
  * @param {Object} action 
  */
-const resource = (state = resourceShape, action) => {
+const resources = (state = resourceShape, action) => {
   switch(action.type) {
     case REQUEST_ENTITY:
       return {
@@ -71,11 +74,18 @@ const resource = (state = resourceShape, action) => {
     case REQUEST_ENTITY_SEARCH:
       return {
         ...state,
-        isFetching: action.isValidSearch,
-        searches: {
-          ...resourceShape.searches,
-          isSearching: action.isValidSearch
+        isFetching: true,
+        isSearching: true,
+        search: {
+          ...resourceShape.search,
+          term: action.term
         }
+      }
+    case END_ENTITY_SEARCH:
+      return {
+        ...state,
+        isSearching: false,
+        search: resourceShape.search
       }
     case RECEIVE_ENTITY_RESOURCE:
       return {
@@ -101,11 +111,11 @@ const resource = (state = resourceShape, action) => {
         ...state,
         isFetching: false,
         attributionText: action.attributionText,
-        searches: {
-          ...state.searches,
-          isSearching: true,
+        search: {
+          ...state.search,
           items: action.resources.map(item => item.id),
-          pagination: action.pagination
+          pagination: action.pagination,
+          term: action.term
         }
       }
     default:
@@ -121,12 +131,13 @@ const resourcesByEntity = (state = {}, action) => {
   switch (action.type) {
     case REQUEST_ENTITY:
     case REQUEST_ENTITY_SEARCH:
+    case END_ENTITY_SEARCH:
     case RECEIVE_ENTITY_RESOURCE:
     case RECEIVE_ENTITY_RESOURCES:
     case RECEIVE_ENTITY_SEARCH:
       return {
         ...state,
-        [action.entity]: resource(state[action.entity], action)
+        [action.entity]: resources(state[action.entity], action)
       }
     default:
       return state 

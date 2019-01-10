@@ -1,6 +1,18 @@
 import React from 'react'
 
-const Search = ({ term, onSearch, resultsCount }) => {
+const Search = ({ term, onSearch, resultsCount, delay = 500 }) => {
+  const onKeyUpDelay = delay => {
+    let timer
+
+    return event => {
+      const liveTerm = event.target.value.trim()
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        onSearch(liveTerm)
+      }, delay)
+    }
+  }
+
   return (
     <div>
       <input
@@ -8,7 +20,7 @@ const Search = ({ term, onSearch, resultsCount }) => {
         name='q'
         placeholder='Search'
         defaultValue={term}
-        onKeyUp={event => onSearch(event.target.value.trim())}
+        onKeyUp={onKeyUpDelay(delay)}
       />
       {
         term ? (

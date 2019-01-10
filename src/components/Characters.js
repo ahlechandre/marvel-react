@@ -17,24 +17,16 @@ export default class Characters extends Component {
       searchCharacters,
       term
     } = this.props
-
-    if (term.length) {
-      searchCharacters(term)
-      return
-    }
-    fetchCharacters()
+    searchCharacters(term).then(() => fetchCharacters())
   }
 
   onSearch(term) {
     const { push } = this.props.history
-    const updateCharacters = () => {
-      const {
-        fetchCharacters,
-        searchCharacters
-      } = this.props
-      searchCharacters(term)
-      fetchCharacters()
-    }
+    const {
+      fetchCharacters,
+      searchCharacters
+    } = this.props
+    searchCharacters(term).then(() => fetchCharacters())
 
     if (term.length) {
       push({
@@ -42,30 +34,23 @@ export default class Characters extends Component {
           (new URLSearchParams({ q: term })).toString()
         }`
       })
-      updateCharacters()
 
       return
     }
+
     push({
       search: ''
     })
-    updateCharacters()
   }
 
   render() {
     const {
       term,
-      isSearching,
       isFetching,
       characters,
-      charactersFromSearch,
       fetchCharactersNextPage,
-      searchCharactersNextPage,
+      attributionText
     } = this.props
-    const charactersToRender = isSearching ? charactersFromSearch : characters
-    const onLoadMoreCharacters = () => (
-      isSearching ? searchCharactersNextPage(term) : fetchCharactersNextPage()
-    )
 
     return (
       <div>
@@ -78,15 +63,15 @@ export default class Characters extends Component {
         <Search
           onSearch={this.onSearch}
           term={term}
-          resultsCount={isSearching ? charactersToRender.length : null}
+          resultsCount={0}
         />
         <CharactersList
-          characters={charactersToRender}
+          characters={characters}
           isFetching={isFetching}
-          onLoadMore={onLoadMoreCharacters}
+          onLoadMore={() => fetchCharactersNextPage()}
         />
 
-        <MarvelFooter attributionText={this.props.attributionText} />
+        <MarvelFooter attributionText={attributionText} />
       </div>
     )
   }

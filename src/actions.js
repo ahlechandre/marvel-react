@@ -3,7 +3,8 @@ import {
   RECEIVE_ENTITY_RESOURCE,
   RECEIVE_ENTITY_RESOURCES,
   RECEIVE_ENTITY_SEARCH,
-  REQUEST_ENTITY_SEARCH
+  REQUEST_ENTITY_SEARCH,
+  END_ENTITY_SEARCH
 } from './constants'
 import { entitiesUrl, entityUrl } from './services/api/marvel'
 
@@ -20,9 +21,18 @@ const requestEntity = entity => ({
  * 
  * @param {string} entity 
  */
-const requestEntitySearch = (entity, isValidSearch) => ({
+const requestEntitySearch = (entity, term) => ({
   type: REQUEST_ENTITY_SEARCH,
-  isValidSearch,
+  entity,
+  term
+})
+
+/**
+ * 
+ * @param {string} entity 
+ */
+const endEntitySearch = entity => ({
+  type: END_ENTITY_SEARCH,
   entity
 })
 
@@ -60,9 +70,10 @@ const receiveEntityResources = (entity, json) => ({
  * @param {string} entity 
  * @param {Object} json 
  */
-const receiveEntitySearch = (entity, json) => ({
+const receiveEntitySearch = (entity, term, json) => ({
   type: RECEIVE_ENTITY_SEARCH,
   entity,
+  term,
   attributionText: json.attributionText,
   resources: json.data.results,
   pagination: {
@@ -80,11 +91,8 @@ const receiveEntitySearch = (entity, json) => ({
 const shouldFetchEntityResources = (state, entity) => {
   const resources = state.resourcesByEntity[entity]
   
-  return (
-    !resources ||
-    !resources.isFetching ||
-    !resources.items.length ||
-    resources.items.length < resources.pagination.limit
+  return !resources || (
+    !resources.isFetching && !resources.isSearching
   )
 }
 
@@ -92,12 +100,29 @@ const shouldFetchEntityResources = (state, entity) => {
  * 
  * @param {Object} state 
  * @param {string} entity 
+ * @param {number} id 
  */
 const shouldFetchEntityResource = (state, entity, id) => (
   !state.entities[entity] ||
   !state.resourcesByEntity[entity].isFetching ||
   !state.entities[entity][id]
 )
+
+/**
+ * 
+ * @param {Object} state 
+ * @param {string} entity 
+ * @param {string} term 
+ */
+const shouldSearchEntityResources = (state, entity, term) => {
+  const resources = state.resourcesByEntity[entity]
+  const isValidTerm = !!term.length
+
+  return isValidTerm && (
+    !resources ||
+    !resources.isFetching
+  )
+}
 
 /**
  * 
@@ -160,11 +185,10 @@ export const searchEntityResources = options => {
       nextPage,
       searchFor
     } = options
-    const isValidSearch = !!term.trim().length
-    dispatch(requestEntitySearch(entity, isValidSearch))
 
-    /** Starts the fetching process. */
-    if (isValidSearch) {
+    if (shouldSearchEntityResources(getState(), entity, term)) {
+      /** Starts the fetching process. */
+      dispatch(requestEntitySearch(entity, term))
       const { limit, offset } = getState().resourcesByEntity[entity].pagination
       const nextOffset = nextPage ? limit + offset : offset
       const endpointUrl = new URL(entitiesUrl(entity, limit, nextOffset))
@@ -174,7 +198,15 @@ export const searchEntityResources = options => {
       /** Sends the HTTP request to Marvel's API. */
       return fetch(endpoint)
         .then(response => response.json(), error => console.error(error))
-        .then(json => dispatch(receiveEntitySearch(entity, json)))
+        .then(json => dispatch(receiveEntitySearch(entity, term, json)))
+    }
+    const resources = getState().resourcesByEntity[entity]
+
+    if (resources && resources.isSearching) {
+      /**
+       * Ends the current search process.
+       */
+      dispatch(endEntitySearch(entity))
     }
 
     /** Tells the calling code that there's nothing to wait for. */
