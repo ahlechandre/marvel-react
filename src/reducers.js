@@ -51,7 +51,7 @@ const resourceShape = {
     limit: 20,
   },
   search: {
-    term: null,
+    term: '',
     items: [],
     pagination: {
       offset: 0,

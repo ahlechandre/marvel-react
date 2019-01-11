@@ -1,7 +1,7 @@
 import React from 'react'
 
-const Search = ({ term, onSearch, resultsCount, delay = 500 }) => {
-  const onKeyUpDelay = delay => {
+const Search = ({ term, onSearch, resultsCount, delay = 500, isFetching }) => {
+  const debounce = delay => {
     let timer
 
     return event => {
@@ -20,10 +20,10 @@ const Search = ({ term, onSearch, resultsCount, delay = 500 }) => {
         name='q'
         placeholder='Search'
         defaultValue={term}
-        onKeyUp={onKeyUpDelay(delay)}
+        onChange={debounce(delay)}
       />
       {
-        term ? (
+        !isFetching && term ? (
           <p>{resultsCount} results for "{term}"</p>
         ) : null
       }

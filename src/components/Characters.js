@@ -17,7 +17,8 @@ export default class Characters extends Component {
       searchCharacters,
       term
     } = this.props
-    searchCharacters(term).then(() => fetchCharacters())
+    searchCharacters(term)
+      .then(() => fetchCharacters())
   }
 
   onSearch(term) {
@@ -26,7 +27,8 @@ export default class Characters extends Component {
       fetchCharacters,
       searchCharacters
     } = this.props
-    searchCharacters(term).then(() => fetchCharacters())
+    searchCharacters(term)
+      .then(() => fetchCharacters())
 
     if (term.length) {
       push({
@@ -37,7 +39,6 @@ export default class Characters extends Component {
 
       return
     }
-
     push({
       search: ''
     })
@@ -47,6 +48,7 @@ export default class Characters extends Component {
     const {
       term,
       isFetching,
+      isSearching,
       characters,
       fetchCharactersNextPage,
       attributionText
@@ -63,7 +65,8 @@ export default class Characters extends Component {
         <Search
           onSearch={this.onSearch}
           term={term}
-          resultsCount={0}
+          isFetching={isFetching}
+          resultsCount={isSearching ? characters.length : 0}
         />
         <CharactersList
           characters={characters}

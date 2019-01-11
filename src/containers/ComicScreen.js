@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import Comic from '../components/Comic'
-import { fetchEntityResource } from '../actions';
+import { fetchEntityResource } from '../actions'
+import { ENTITIES } from '../constants'
 
 const mapStateToProps = (state, ownProps) => {
   const { id } = ownProps.match.params
@@ -24,9 +25,10 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  fetchComic: () => dispatch(
-    fetchEntityResource('comics', ownProps.match.params.id)
-  )
+  fetchComic: () => dispatch(fetchEntityResource({
+    entity: ENTITIES.COMICS,
+    id: ownProps.match.params.id
+  }))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Comic)

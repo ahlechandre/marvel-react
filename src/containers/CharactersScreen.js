@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import Characters from '../components/Characters'
 import { fetchEntityResources, searchEntityResources } from '../actions'
+import { ENTITIES } from '../constants'
 
 const mapStateToProps = (state, ownProps) => {
   const initialProps = {
@@ -35,13 +36,18 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = dispatch => ({
-  fetchCharacters: () => dispatch(fetchEntityResources('characters')),
-  fetchCharactersNextPage: () => dispatch(fetchEntityResources('characters', true)),
+  fetchCharacters: () => dispatch(fetchEntityResources({
+    entity: ENTITIES.CHARACTERS
+  })),
+  fetchCharactersNextPage: () => dispatch(fetchEntityResources({
+    entity: ENTITIES.CHARACTERS,
+    nextPage: true
+  })),
   searchCharacters: term => dispatch(searchEntityResources({
-    entity: 'characters',
+    entity: ENTITIES.CHARACTERS,
     searchFor: 'name',
     term
-  })),
+  }))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Characters)

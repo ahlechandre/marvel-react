@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import Character from '../components/Character'
 import { fetchEntityResource } from '../actions';
+import { ENTITIES } from '../constants';
 
 const mapStateToProps = (state, ownProps) => {
   const { id } = ownProps.match.params
@@ -25,7 +26,10 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   fetchCharacter: () => dispatch(
-    fetchEntityResource('characters', ownProps.match.params.id)
+    fetchEntityResource({
+      entity: ENTITIES.CHARACTERS,
+      id: ownProps.match.params.id
+    })
   )
 })
 
