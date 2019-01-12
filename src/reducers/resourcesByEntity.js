@@ -1,47 +1,13 @@
-import { combineReducers } from 'redux'
 import {
   REQUEST_ENTITY,
+  END_ENTITY_SEARCH,
+  REQUEST_ENTITY_SEARCH,
+  RECEIVE_ENTITY_SEARCH,
   RECEIVE_ENTITY_RESOURCE,
   RECEIVE_ENTITY_RESOURCES,
-  RECEIVE_ENTITY_SEARCH,
-  REQUEST_ENTITY_SEARCH,
-  END_ENTITY_SEARCH
-} from './constants'
-/**
- * 
- * @param {Object} state 
- * @param {Object} action 
- */
-const entities = (state = {}, action) => {
-  switch (action.type) {
-    case RECEIVE_ENTITY_RESOURCE:
-      return {
-        ...state,
-        [action.entity]: {
-          ...state[action.entity],
-          [action.resource.id]: action.resource
-        }
-      }
-    case RECEIVE_ENTITY_RESOURCES:
-    case RECEIVE_ENTITY_SEARCH:
-      const reduceResources = (resources, resource) => ({
-        ...resources,
-        [resource.id]: resource
-      })
-      const nextResources = action.resources.reduce(reduceResources, {})
+} from '../constants'
 
-      return {
-        ...state,
-        [action.entity]: {
-          ...state[action.entity],
-          ...nextResources
-        }
-      }
-    default:
-      return state
-  }
-}
-const resourceShape = {
+const resourcesInitialState = {
   isFetching: false,
   isSearching: false,
   attributionText: null,
@@ -59,12 +25,13 @@ const resourceShape = {
     },
   }
 }
+
 /**
  * 
  * @param {Object} state 
  * @param {Object} action 
  */
-const resources = (state = resourceShape, action) => {
+const resources = (state = resourcesInitialState, action) => {
   switch(action.type) {
     case REQUEST_ENTITY:
       return {
@@ -77,7 +44,7 @@ const resources = (state = resourceShape, action) => {
         isFetching: true,
         isSearching: true,
         search: {
-          ...resourceShape.search,
+          ...resourcesInitialState.search,
           term: action.term
         }
       }
@@ -85,7 +52,7 @@ const resources = (state = resourceShape, action) => {
       return {
         ...state,
         isSearching: false,
-        search: resourceShape.search
+        search: resourcesInitialState.search
       }
     case RECEIVE_ENTITY_RESOURCE:
       return {
@@ -122,6 +89,7 @@ const resources = (state = resourceShape, action) => {
       return state
   }
 }
+
 /**
  * 
  * @param {Object} state 
@@ -144,7 +112,4 @@ const resourcesByEntity = (state = {}, action) => {
   }
 }
 
-export default combineReducers({
-  entities,
-  resourcesByEntity
-})
+export default resourcesByEntity

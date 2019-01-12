@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import MarvelFooter from './MarvelFooter'
+import MarvelFooter from '../../system/components/MarvelFooter'
 
 export default class Comic extends Component {
   componentDidMount() {

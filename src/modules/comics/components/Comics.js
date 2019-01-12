@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import ComicsList from './ComicsList'
-import MarvelFooter from './MarvelFooter'
-import Search from './Search'
+import MarvelFooter from '../../system/components/MarvelFooter'
+import Search from '../../system/components/Search'
 
 export default class Comics extends Component {
   constructor(props) {
@@ -60,7 +60,7 @@ export default class Comics extends Component {
         <ComicsList
           comics={comics}
           isFetching={isFetching}
-          onLoadMore={() => fetchComicsNextPage()}
+          onLoadMore={isSearching ? null : () => fetchComicsNextPage()}
         />
 
         <MarvelFooter attributionText={attributionText} /> 

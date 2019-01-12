@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import LoadMoreButton from './LoadMoreButton'
+import LoadMoreButton from '../../system/components/LoadMoreButton'
 
 const CharactersList = ({ characters, onLoadMore, isFetching }) => {
   const mapCharacterToLink = (character, index) => (
@@ -19,10 +19,13 @@ const CharactersList = ({ characters, onLoadMore, isFetching }) => {
           <h3>Loading...</h3>
         ) : null
       }
-      <LoadMoreButton
-        onClick={onLoadMore}
-        disabled={isFetching}
-      />
+      {
+        onLoadMore ?
+          <LoadMoreButton
+            onClick={onLoadMore}
+            disabled={isFetching}
+          /> : null
+      }
     </div>
   )
 }

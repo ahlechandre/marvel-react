@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import Comic from '../components/Comic'
-import { fetchEntityResource } from '../actions'
-import { ENTITIES } from '../constants'
+import { fetchEntityResource } from '../../../actions'
+import { ENTITIES } from '../../../constants'
 
 const mapStateToProps = (state, ownProps) => {
   const { id } = ownProps.match.params

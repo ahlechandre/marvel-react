@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import CharactersList from './CharactersList'
-import MarvelFooter from './MarvelFooter'
-import Search from './Search'
+import MarvelFooter from '../../system/components/MarvelFooter'
+import Search from '../../system/components/Search'
 
 export default class Characters extends Component {
   constructor(props) {
@@ -71,7 +71,7 @@ export default class Characters extends Component {
         <CharactersList
           characters={characters}
           isFetching={isFetching}
-          onLoadMore={() => fetchCharactersNextPage()}
+          onLoadMore={isSearching ? null : () => fetchCharactersNextPage()}
         />
 
         <MarvelFooter attributionText={attributionText} />
